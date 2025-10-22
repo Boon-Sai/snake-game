@@ -3,21 +3,33 @@
   const ctx = canvas.getContext('2d');
   const scoreEl = document.getElementById('score');
   const restartBtn = document.getElementById('restart');
-  const overlay = document.getElementById('gameOver');
-  const finalScoreEl = document.getElementById('finalScore');
-  const playAgainBtn = document.getElementById('playAgain');
+  const overlay = document.getElementById('overlay');
+  const startBtn = document.getElementById('start');
 
   // Board/grid config
   const tileSize = 20; // 20px tiles → 20x20 grid for 400x400 canvas
   const tilesX = canvas.width / tileSize;
   const tilesY = canvas.height / tileSize;
 
-  // Colors
+  // Graphics
   const boardColor = '#0b1220';
   const gridColor = '#0f172a';
-  const snakeHeadColor = '#22c55e';
-  const snakeBodyColor = '#16a34a';
-  const fruitColor = '#f97316';
+  const snakeHeadSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="color: #22c55e">
+    <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A1.23 1.23 0 0 0 4.5 16h11a1.23 1.23 0 0 0 .625-.202 1.23 1.23 0 0 0 .41-1.412A9.982 9.982 0 0 0 10 12a9.982 9.982 0 0 0-6.535 2.493Z" />
+  </svg>`;
+  const snakeBodySvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="color: #16a34a">
+    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+  </svg>`;
+  const fruitSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" style="color: #f97316">
+    <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+  </svg>`;
+  const imgCache = new Map();
+  ['snakeHead', 'snakeBody', 'fruit'].forEach(id => {
+    const svg = (id === 'snakeHead') ? snakeHeadSvg : (id === 'snakeBody' ? snakeBodySvg : fruitSvg);
+    const img = new Image();
+    img.src = `data:image/svg+xml;base64,${btoa(svg)}`;
+    imgCache.set(id, img);
+  });
 
   // Game state
   let snake; // array of {x, y}
@@ -44,6 +56,13 @@
     lastTickAt = 0;
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(gameLoop);
+  }
+
+  function showStartScreen() {
+    if (rafId) cancelAnimationFrame(rafId);
+    overlay.hidden = false;
+    ctx.fillStyle = boardColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
   function spawnFruit(occupied) {
@@ -95,9 +114,7 @@
 
   function endGame() {
     isRunning = false;
-    finalScoreEl.textContent = String(score);
-    overlay.hidden = false;
-    if (rafId) cancelAnimationFrame(rafId);
+    showStartScreen();
   }
 
   function validateTurn(current, next) {
@@ -128,17 +145,16 @@
     }
 
     // Fruit
-    drawTile(fruit.x, fruit.y, fruitColor);
+    drawImg(imgCache.get('fruit'), fruit.x, fruit.y);
 
     // Snake
     snake.forEach((seg, idx) => {
-      drawTile(seg.x, seg.y, idx === 0 ? snakeHeadColor : snakeBodyColor);
+      drawImg(imgCache.get(idx === 0 ? 'snakeHead' : 'snakeBody'), seg.x, seg.y);
     });
   }
 
-  function drawTile(x, y, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x * tileSize + 1, y * tileSize + 1, tileSize - 2, tileSize - 2);
+  function drawImg(img, x, y) {
+    ctx.drawImage(img, x * tileSize, y * tileSize, tileSize, tileSize);
   }
 
   // Input
@@ -168,10 +184,10 @@
   }, { passive: false });
 
   restartBtn.addEventListener('click', () => initGame());
-  playAgainBtn.addEventListener('click', () => initGame());
+  startBtn.addEventListener('click', () => initGame());
 
   // Start
-  initGame();
+  showStartScreen();
 })();
 
 
