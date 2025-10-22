@@ -15,9 +15,8 @@ button:active { transform: translateY(1px); }
 canvas { display: block; width: 400px; height: 400px; }
 
 .overlay { position: absolute; inset: 0; background: rgba(2,6,23,0.8); display: grid; place-items: center; }
-.overlay-content { background: #111827; padding: 18px 20px; border-radius: 10px; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
-.overlay-content p { margin: 6px 0; }
-.overlay-content button { background: #38bdf8; color: #082f49; }
+.overlay-content { text-align: center; }
+.overlay-content button { background: #38bdf8; color: #082f49; font-size: 22px; padding: 12px 20px; }
 
 .hint { text-align: center; color: #94a3b8; margin-top: 12px; font-size: 13px; }
 

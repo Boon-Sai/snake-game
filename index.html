@@ -15,15 +15,13 @@
       </div>
       <div class="board-wrap">
         <canvas id="board" width="400" height="400" aria-label="Snake board" role="img"></canvas>
-        <div id="gameOver" class="overlay" hidden>
+        <div id="overlay" class="overlay">
           <div class="overlay-content">
-            <p>Game Over</p>
-            <p>Final Score: <span id="finalScore">0</span></p>
-            <button id="playAgain">Play Again</button>
+            <button id="start">Start Game</button>
           </div>
         </div>
       </div>
-      <p class="hint">Use arrow keys or WASD to move. Eat fruit to grow. Avoid borders.</p>
+      <p class="hint">Use arrow keys or WASD to move the snake.</p>
     </div>
 
     <script src="script.js"></script>
